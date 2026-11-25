@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Рассчитайте платежи по кредиту на квартиру и сравните четыре банка Беларуси.">
+<title>Кредит на квартиру</title>
+<style>
+:root {
+  color-scheme: light;
+  font: 100%/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ink: #17273e;
+  --muted: #516278;
+  --line: #dce4ee;
+  --page: #f4f7fb;
+  --blue: #194d9f;
+  --wash: #eaf2ff;
+  --green: #eaf7ef;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); }
+main { max-width: 1240px; margin: auto; padding: 32px 28px 40px; }
+h1, h2, h3, p, dl { margin: 0; }
+h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.08; letter-spacing: -.047em; margin-bottom: 15px; }
+h2 { font-size: 1.24rem; letter-spacing: -.022em; }
+h3 { font-size: 1rem; }
+a { color: var(--blue); text-underline-offset: .2em; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid #4678d3; outline-offset: 3px; }
+[hidden] { display: none !important; }
+.bank-picker { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; margin-bottom: 14px; }
+.bank-picker button { display: flex; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; min-height: 49px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 10px; background: #fff; text-align: left; font-size: .9rem; font-weight: 700; overflow-wrap: break-word; }
+.bank-picker button[aria-pressed="true"] { border-color: #2861b7; color: #103e83; background: var(--wash); }
+.bank-icon { flex: 0 0 29px; width: 29px; height: 29px; object-fit: contain; border-radius: 5px; }
+.workspace { display: grid; grid-template-columns: minmax(220px,.78fr) minmax(0,1.65fr); align-items: start; gap: 14px; }
+.card, .comparison { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
+.purchase h2 { margin-bottom: 12px; }
+.fields { display: grid; gap: 10px; }
+.fields.pair { grid-template-columns: repeat(2,minmax(0,1fr)); }
+label { display: block; font-weight: 650; font-size: .89rem; }
+input, select { width: 100%; min-height: 43px; margin-top: 4px; border: 1px solid #aab9cd; border-radius: 8px; padding: 7px 10px; background: #fff; font-variant-numeric: tabular-nums; }
+input[aria-invalid="true"] { border-color: #a33322; }
+.muted { color: var(--muted); font-size: .86rem; }
+.field-note { margin-top: 4px; }
+#input-error, #budget-error, #prepayment-error { color: #963a26; font-size: .86rem; margin-top: 7px; }
+.loan-total { margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--line); }
+.loan-total strong { display: block; font-size: 1.4rem; letter-spacing: -.025em; margin: 1px 0; }
+.loan-total .muted { display: block; }
+.details-tools { padding-top: 10px; }
+summary { width: fit-content; padding: 4px 0; color: var(--blue); cursor: pointer; font-weight: 670; font-size: .9rem; }
+.details-tools .fields { margin-top: 8px; }
+.answer-title { font-weight: 720; }
+.amount { display: block; font-size: clamp(2rem, 4vw, 3.1rem); letter-spacing: -.05em; line-height: 1.06; font-weight: 760; margin: 2px 0 6px; font-variant-numeric: tabular-nums; }
+.amount small { margin-left: 1px; font-size: .94rem; letter-spacing: 0; font-weight: 650; }
+.amount-parts { display: flex; flex-wrap: wrap; gap: 3px 16px; color: var(--muted); font-size: .86rem; }
+.amount-parts b { color: var(--ink); font-weight: 640; }
+.answers { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,245px),1fr)); gap: 8px; }
+.answer { min-width: 0; padding: 13px; border-radius: 11px; background: var(--wash); }
+.answer.after { background: var(--green); }
+.answer.after .amount { color: #146047; }
+.payment-month { color: var(--muted); font-size: .82rem; margin-top: 6px; }
+.bank-info { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 8px; }
+.bank-info a { font-size: .8rem; }
+.agro-options { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.agro-options button { border: 1px solid var(--line); border-radius: 7px; background: white; padding: 4px 8px; font-size: .83rem; }
+.agro-options button[aria-pressed="true"] { color: #103e83; background: var(--wash); border-color: #9ab8ea; }
+.phases { margin-top: 9px; }
+.change { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 10px; border-top: 1px solid var(--line); padding: 7px 0; font-size: .86rem; }
+.change .muted { flex: 0 0 100%; font-size: .8rem; }
+.debt { margin-top: 7px; font-size: .88rem; }
+.notice { background: #fff1dc; color: #74370d; border-radius: 7px; padding: 8px 9px; margin-top: 8px; font-size: .84rem; }
+.prepayment-restriction { background: #fff4bf; border: 1px solid #e4c45e; color: #5a4308; margin: 0 0 8px; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 9px; }
+.button { border: 1px solid #b6c8e0; border-radius: 8px; background: #fff; padding: 8px 11px; color: var(--blue); font-size: .9rem; font-weight: 700; }
+.button.primary { background: var(--blue); border-color: var(--blue); color: white; }
+.button.plain { border-color: transparent; padding-inline: 5px; }
+.prepayment, #full-schedule { margin-top: 12px; }
+.prepayment-form { margin-top: 8px; border: 1px solid var(--line); border-radius: 9px; padding: 11px; }
+.prepayment-form .actions { margin-top: 9px; }
+.applied { margin-bottom: 6px; font-size: .87rem; }
+#full-schedule { padding-top: 8px; border-top: 1px solid var(--line); }
+#budget { max-width: 260px; }
+#schedule-summary { margin-top: 6px; }
+.comparison { margin-top: 14px; padding-block: 12px; }
+.compare-picks { display: flex; flex-wrap: wrap; gap: 7px; margin: 6px 0; }
+.compare-picks button { display: block; color: var(--ink); background: var(--wash); border: 1px solid #d0e0f7; border-radius: 8px; padding: 7px 9px; font-size: .87rem; text-align: left; }
+.compare-picks button:hover { border-color: #7799c9; }
+.compare-picks strong { display: block; }
+.table-wrap { overflow: auto; margin-top: 6px; }
+.schedule { max-height: 350px; }
+table { width: 100%; border-collapse: collapse; font-size: .86rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 7px 6px; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child { text-align: left; }
+td { white-space: nowrap; }
+td[colspan] { white-space: normal; }
+thead th { background: #eff4fa; color: #344862; }
+.schedule th { position: sticky; top: 0; }
+.schedule tbody th { position: static; }
+tr.lump { background: var(--green); }
+.model-notes { margin-top: 12px; }
+.model-notes p { margin-top: 6px; }
+@media (max-width: 900px) { main { padding: 24px 17px 30px; } .card { padding: 14px; } }
+@media (max-width: 680px) { .workspace { grid-template-columns: 1fr; gap: 9px; } .purchase .fields { grid-template-columns: 1fr 1fr; } .bank-picker { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 400px) { main { padding-inline: 10px; } .purchase .fields { gap: 6px; } .bank-picker button { font-size: .82rem; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Кредит на квартиру</h1>
+  <nav class="bank-picker" aria-label="Выберите банк">
+    <button type="button" data-bank="tech" aria-pressed="true"><img class="bank-icon" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAEpklEQVR42u2b34tbRRTHP2fuJDf7o921WmmroihFpIKiFRR88akgFkTUx5a+tFawf4JQ/wKFonYRK6IIFtQX8c2+qEit+CIqgm0paitd67ab3Wxy752vDzfZbZut1k1yt2bvQAjkZjJzPnPOmZM5ZwxkYAJg38zziP1I2zGNM0xNVse5b5DeYGryaOdDAxm7T8fEk4fx8S4EhCZIQyU/ZhDF5PK1jrBp4gUOkjgwUVk3xejkLpJGIG2EoRMe8gXtyDcysYffp98Ek7H3z+fwox+SLqQQohzVMDcJXEZU9YTm0w7sAJJQcMMvfNsWFBzmRNABj7SdrGnYWhB+kYHlMruHPWa13DOsqWYoAFrvWNPNbI0DgDUPwPccW6yy68zUW8zme3AjKIW0ucoONLZcChUIwAyUiLs2Rex5LCYEQdGaIIic8c7XTU6ezbCKrUgTVgTAGWQJbL3V8fJTtVVVgK9OpZw8k+GquTkUagJJCmnIbbATRgWBgq4dVEo4Z12PJdqadO1+ZoZzS9+39hx60b6enaB3VwIA/sUz/sOz/9CvM2av8avvlyoG5abx+U8px35IqFaNoG7TSVrimUeqPHhHtPjcGXz/W8bR4y18Zfl+rZZ4/F7Pjm0V+uly+g7grS+afPDZAowbhGWijrq47Wa3CMDai/vdmYxX3p+HsWv32/lEzI5tldzZWX8g+D455EXtPXcx4CcMN2KEqwSJHGQGcaV76nEF/DojGjWyq/o5B8HDuVnloF3/zmt8P1a+s/qNFpy5EEgBl9GlygKysPzkpbZDDXQDEASMXy8EZubFZAdSH+LYnn7CWf7yLn+/2Aj8MSuIrK//LyUggvP1wHRdOINKtDT+6miAwVwLTk0HkgyqHk6cTqk3hLn+HikKMAdpC778JaXqPc0UqhHMNVX8NpiFPAQ9firl/oOXUFuVkkzgBnO6IOWz3ffeHNXICO2NsZkI4m6/UYgPCIL5hfYKtD3zoEPiJIUkuWxMt8pO0KIrdVUFnG5fLnSvpub7oprF/gfqK+XyRKgEUAIoAZQASgAlgBJACaAEUAIoAZQASgAlgBJACaAEQFkiQ/9r0trlNC4/318uo9vJNHfSXlIxxXu+qOJUpXmGl7rys/yrWiuFtK6llFNEIVUnhQCoeNi8wXH3RsfWWyIevccvytlpD90ZsW/nCD9PZ5w8Hzh7MdDKitDOvRc0qPN7ZTAxZnz60jgP3B4xHl/fks41xY9nA08emuX8jHC+O9H6/9AA5fm7bZsdY7GRpHnq3y1T2aF2ltmA0apx3xZHrWIDTzz4IjxgrWJY2xSut41UbAh2gXbNwKFjTdbX8gSm2XVU87u8X31hcMnWgfuAK3JZCyscomYD3wkKMYFobGVSrDTlfcNtg0UIUobCJYASwIoBzBVf6n0DNHMg5hzSt/hYSGHNCC8FolhYOOEw9xrCMBcYyiujy5Wdu4BkoFcdUzd9RNp4l9FJjxhuTZACQoxOetLGEaY2fuJBRo29zM8IP7IbA7JWXrM6bDbvY4cCzP/1Nls27F+6Pb54ff7SsxBeRNoOYXx4rtJK4GYxdxzsdQ6v/7hzff5v2wzuhQVkZMIAAAAASUVORK5CYII=">Технобанк</button>
+    <button type="button" data-bank="agro" aria-pressed="false"><img class="bank-icon" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB4ElEQVR42p2SO2iTYRiFn7+gRAhkKwgtHXIZosShk4MXBEVEQalDwaIONSWiEQehxiVLmoJZ8qMNShEHGws6BBFUXIR6QTCW1CS1jZAsHVIopTq0JibHISbhJxWDZ/o4533Pe/tgG8yPoYqJtBAX/4PvczG9HkLPT/JPA6P5eHkaDQxAXx/Y7WAE2lrXWH9xQ29H0JthtB5F9blgdyMsXUc/biMlkIopAbw/j1LHuxyhNBPU0lOTWg3cbnA6wTg2i+Ea7m4MLT5oVVq4jF6dQWuRRkd/zclPC8ComKhahZUV6O8H28EIxuAt49kJ5HDAocftZepjSJvvJiiVwOWCSgWMtUgj8IuCfEuZ+Hzg8XReQQmUy0E+D95z43h/TlIuA9kr1lbTZlC5q1ZOCTQ/hrIPwx1cz479Yep1qH59IoDBoGnU9oXY2ID6VMOoXIZdR2LsvRg2AKqZe6rVwH401nDLBDoX9tn/56wJ9OGCVVMCfRptcD0AOw9EKRYbQjNo99l4K8HpT1qSCwVwnJqynmX2MMoEUO0uUn5aKiRbHQAoO6Vfd1D6Ekqb7R9q2XR+JqrCo5u43dDbCzYbSLC1BaursLwMe/xxPEPXjG0NmsjcH9dictLCeUdC+EYnOuJ/A6MQ9OBCJmCwAAAAAElFTkSuQmCC">Белагропромбанк</button>
+    <button type="button" data-bank="neo" aria-pressed="false"><img class="bank-icon" alt="" src="data:image/png;base64,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">Нео Банк</button>
+    <button type="button" data-bank="belarus" aria-pressed="false"><img class="bank-icon" alt="" src="data:image/png;base64,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">Беларусбанк 1%</button>
+  </nav>
+
+  <div class="workspace">
+    <section class="card purchase" aria-labelledby="purchase-title">
+      <h2 id="purchase-title">Стоимость и взнос</h2>
+      <div class="fields">
+        <div><label for="price">Цена квартиры, $</label><input id="price" type="text" inputmode="decimal" value="113 267" aria-describedby="price-help"><p id="price-help" class="muted field-note"></p></div>
+        <div><label for="down">Первоначальный взнос, $</label><input id="down" type="text" inputmode="decimal" value="23 000"></div>
+      </div>
+      <p id="input-error" role="status" hidden></p>
+      <div id="loan-total" class="loan-total"></div>
+      <details class="details-tools">
+        <summary>Изменить срок или курс</summary>
+        <div class="fields">
+          <div><label for="years">Срок кредита</label><select id="years"></select></div>
+          <div><label for="exchange">Курс БелВЭБ, BYN за $1</label><input id="exchange" type="text" inputmode="decimal" value="3,015"></div>
+        </div>
+        <p class="muted field-note">Исходный курс от <a href="https://www.belveb.by/rates/">25.11.2026</a>.</p>
+      </details>
+    </section>
+
+    <section class="card payment" aria-labelledby="payment-title">
+      <h2 id="payment-title">Платежи по кредиту</h2>
+      <div id="bank"></div>
+      <div class="prepayment" id="prepayment" hidden>
+        <p id="prepayment-restriction" class="notice prepayment-restriction" hidden><strong id="prepayment-first-month"></strong> Раньше — только с письменного согласия банка.</p>
+        <p id="prepayment-applied" class="applied" hidden></p>
+        <div class="actions">
+          <button type="button" id="prepayment-open" class="button" aria-controls="prepayment-form" aria-expanded="false">Добавить досрочный платёж</button>
+          <button type="button" id="prepayment-remove" class="button plain" hidden>Убрать досрочный платёж</button>
+        </div>
+        <form id="prepayment-form" class="prepayment-form" novalidate hidden>
+          <div class="fields pair">
+            <div><label for="lump">Сумма, $</label><input id="lump" type="text" inputmode="decimal" placeholder="Например, 25 000"></div>
+            <div><label for="month" id="month-label">После какого месяца</label><input id="month" type="number" min="1" max="360" step="1" inputmode="numeric" value="3" aria-describedby="month-example prepayment-restriction prepayment-error"><p id="month-example" class="muted field-note">3 — после третьего платежа.</p></div>
+          </div>
+          <p id="prepayment-error" role="status" hidden></p>
+          <div class="actions">
+            <button type="submit" class="button primary">Применить</button>
+            <button type="button" id="prepayment-cancel" class="button plain">Отмена</button>
+          </div>
+        </form>
+      </div>
+
+      <details id="full-schedule" hidden>
+        <summary>График платежей и ежемесячная доплата</summary>
+        <label for="budget">Сколько хотите платить в месяц, BYN</label>
+        <input id="budget" type="text" inputmode="decimal" placeholder="Например, 3 000" aria-describedby="budget-help budget-error">
+        <p class="muted field-note" id="budget-help">Весь платёж, включая доплату. Пустое поле — платежи по графику.</p>
+        <p id="budget-error" role="status" hidden>Введите сумму от 0 до 1 000 000 BYN. В таблице пока предыдущий расчёт.</p>
+        <p id="schedule-summary" class="muted" aria-live="polite"></p>
+        <div id="months" class="table-wrap schedule" tabindex="0" role="region" aria-label="Полный график платежей"></div>
+      </details>
+    </section>
+  </div>
+
+  <details class="comparison" id="compare" hidden>
+    <summary>Сравнить банки</summary>
+    <div id="compare-result"></div>
+  </details>
+  <details class="model-notes">
+    <summary>Как посчитано</summary>
+    <p class="muted">Калькулятор направляет доплату сразу на погашение долга и пересчитывает платежи на оставшийся срок. Месячные доплаты начинаются со следующего месяца после разового платежа, а без него — с первого месяца. У Беларусбанка 1% в расчёте действует пятилетнее ограничение.</p>
+    <p class="muted">Ставки взяты на 25.11.2026. Страховка, оформление и налоговый вычет в расчёт не входят.</p>
+  </details>
+</main>
+<script>
+'use strict';
+
+const STANDARD_PRICE_USD = 113267;
+const plans = [
+  {
+    id: 'tech', name: 'Технобанк', program: '«Милый дом»',
+    price: STANDARD_PRICE_USD, years: 30, grace: 0, rate: 13.99, type: 'annuity',
+    lock: 0, minDown: 20, maxCredit: 750000, summary: '13,99% годовых на весь срок',
+    url: 'https://tb.by/individuals/crediting/top/kreditnyy-produkt--milyy-dom-/'
+  },
+  {
+    id: 'agro', name: 'Белагропромбанк', program: 'На приобретение недвижимости',
+    price: STANDARD_PRICE_USD, years: 30, grace: 6, rate: 10.9, nextRate: 15, switchMonth: 25,
+    type: 'differential', lock: 0, minDown: 10,
+    summary: '10,9% годовых первые 2 года, затем 15%. Первые 6 месяцев по графику платятся только проценты.',
+    url: 'https://www.belapb.by/chastnomu-klientu/kredity/kredity-na-priobretenie-zhilya/'
+  },
+  {
+    id: 'neo', name: 'Нео Банк Азия', program: 'На приобретение недвижимости',
+    price: STANDARD_PRICE_USD, years: 20, grace: 0, rate: 10.9, nextRate: 15.9, switchMonth: 25,
+    type: 'annuity', lock: 0, minDown: 10, maxCredit: 500000, summary: '10,9% годовых первые 2 года, затем 15,9%',
+    url: 'https://neobank.by/credits/nedvizhimost-ot-zastrojshika/'
+  },
+  {
+    id: 'belarus', name: 'Беларусбанк', program: '«Ипотека с нами» под 1%',
+    price: 123449.96, years: 20, grace: 12, rate: 1, nextRate: 15.4, switchMonth: 25,
+    type: 'annuity', lock: 60,
+    summary: '1% годовых первые 2 года, затем 15,4%. Первый год по графику платятся только проценты.',
+    url: 'https://belarusbank.by/fizicheskim_licam/kredit/financing/kredit-ipoteka-s-nami-v-ramkakh-partnerskikh-programm/'
+  }
+];
+
+const rubFormat = new Intl.NumberFormat('ru-BY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const usdFormat = new Intl.NumberFormat('ru-BY', { maximumFractionDigits: 2 });
+const percentFormat = new Intl.NumberFormat('ru-BY', { maximumFractionDigits: 1 });
+const toCents = amount => Math.round(amount * 100 + 1e-7);
+const rub = cents => rubFormat.format(cents / 100);
+const usd = amount => `$${usdFormat.format(amount)}`;
+
+function getPlan(plan, agroType) {
+  if (plan.id !== 'agro' || agroType !== 'annuity') return plan;
+  return {
+    ...plan, type: 'annuity', rate: 14.5, nextRate: null, switchMonth: null,
+    summary: '14,5% годовых с первого месяца. Первые 6 месяцев по графику платятся только проценты.'
+  };
+}
+
+function annuity(balance, monthlyRate, months) {
+  return Math.round(balance * monthlyRate / -Math.expm1(-months * Math.log1p(monthlyRate)));
+}
+
+function simulate(plan, settings) {
+  const price = toCents(plan.price * settings.exchange);
+  const down = toCents(Math.min(settings.down, plan.price) * settings.exchange);
+  const opening = price - down;
+  const term = plan.years * 12;
+  const requestedLump = toCents(settings.lump * settings.exchange);
+  const lumpMonth = requestedLump ? Math.max(settings.prepaymentAfter ?? settings.month, plan.lock) : null;
+  const budget = toCents(settings.budget);
+  const budgetStarts = requestedLump ? settings.month + 1 : 1;
+  const extraStarts = Math.max(requestedLump ? lumpMonth + 1 : 1, plan.lock + 1);
+  let balance = opening;
+  let scheduled = 0;
+  let totalInterest = 0;
+  let recalculate = true;
+  const rows = [];
+
+  for (let month = 1; month <= term && balance > 0; month++) {
+    const annualRate = plan.switchMonth && month >= plan.switchMonth ? plan.nextRate : plan.rate;
+    const monthlyRate = annualRate / 1200;
+    const interest = Math.round(balance * monthlyRate);
+    const payingPrincipal = month > plan.grace;
+    const monthsRemaining = term - month + 1;
+    const rateChangesAnnuity = month === plan.switchMonth && plan.type === 'annuity';
+
+    if (payingPrincipal && (recalculate || rateChangesAnnuity)) {
+      scheduled = plan.type === 'annuity'
+        ? annuity(balance, monthlyRate, monthsRemaining)
+        : Math.round(balance / monthsRemaining);
+      recalculate = false;
+    }
+
+    let scheduledPrincipal = 0;
+    if (payingPrincipal) {
+      scheduledPrincipal = plan.type === 'annuity' ? Math.max(0, scheduled - interest) : scheduled;
+      scheduledPrincipal = month === term ? balance : Math.min(balance, scheduledPrincipal);
+    }
+    const minimum = interest + scheduledPrincipal;
+    const extra = budget && month >= extraStarts
+      ? Math.min(balance - scheduledPrincipal, Math.max(0, budget - minimum))
+      : 0;
+    const lump = month === lumpMonth ? Math.min(balance - scheduledPrincipal - extra, requestedLump) : 0;
+    const principal = scheduledPrincipal + extra + lump;
+    const total = interest + principal;
+    balance -= principal;
+    totalInterest += interest;
+    if (extra || lump) recalculate = true;
+    const shortfall = budget && month >= budgetStarts ? Math.max(0, minimum - budget) : 0;
+    rows.push({ month, annualRate, total, interest, principal, minimum, extra, lump, balance, shortfall });
+  }
+
+  return { plan, price, down, opening, rows, totalInterest, totalCost: price + totalInterest, lumpMonth, requestedLump };
+}
+
+function duration(months) {
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  const yearWord = years % 100 >= 11 && years % 100 <= 14 ? 'лет'
+    : years % 10 === 1 ? 'год' : years % 10 >= 2 && years % 10 <= 4 ? 'года' : 'лет';
+  return [years ? `${years} ${yearWord}` : '', rest ? `${rest} мес.` : ''].filter(Boolean).join(' ');
+}
+
+const picker = document.querySelector('.bank-picker');
+const bank = document.querySelector('#bank');
+const fields = Object.fromEntries(['price', 'down', 'exchange', 'budget'].map(id => [id, document.getElementById(id)]));
+const termField = document.querySelector('#years');
+const priceHelp = document.querySelector('#price-help');
+const errors = document.querySelector('#input-error');
+const budgetError = document.querySelector('#budget-error');
+const loanTotal = document.querySelector('#loan-total');
+const fullSchedule = document.querySelector('#full-schedule');
+const scheduleSummary = document.querySelector('#schedule-summary');
+const comparison = document.querySelector('#compare');
+const months = document.querySelector('#months');
+const compareResult = document.querySelector('#compare-result');
+const prepaymentPanel = document.querySelector('#prepayment');
+const prepaymentForm = document.querySelector('#prepayment-form');
+const prepaymentOpen = document.querySelector('#prepayment-open');
+const prepaymentRemove = document.querySelector('#prepayment-remove');
+const prepaymentApplied = document.querySelector('#prepayment-applied');
+const prepaymentError = document.querySelector('#prepayment-error');
+const prepaymentRestriction = document.querySelector('#prepayment-restriction');
+const prepaymentFirstMonth = document.querySelector('#prepayment-first-month');
+const lumpField = document.querySelector('#lump');
+const monthField = document.querySelector('#month');
+const monthLabel = document.querySelector('#month-label');
+const monthExample = document.querySelector('#month-example');
+const whole = new Intl.NumberFormat('ru-BY', { maximumFractionDigits: 0 });
+const rounded = cents => whole.format(cents / 100);
+let bankId = 'tech';
+let agroType = 'differential';
+let currentResults = [];
+let monthlyBudget = 0;
+const defaultPrepayment = { amount: 0, month: 3, belarusMonth: plans.find(plan => plan.id === 'belarus').lock + 1 };
+let prepayment = { ...defaultPrepayment };
+const priceInputs = { standard: fields.price.value, belarus: usdFormat.format(plans.find(plan => plan.id === 'belarus').price) };
+const terms = Object.fromEntries(plans.map(plan => [plan.id, plan.years]));
+
+function priceGroup(id) {
+  return id === 'belarus' ? 'belarus' : 'standard';
+}
+
+function parseAmount(raw, emptyValue = NaN) {
+  const value = raw.trim().replace(/\s/g, '').replace(',', '.');
+  if (!value) return emptyValue;
+  return /^\d+(?:\.\d*)?$/.test(value) ? Number(value) : NaN;
+}
+
+function validPrice(price) {
+  return price >= 1 && price <= 10000000;
+}
+
+function getSettings() {
+  const prices = { standard: parseAmount(priceInputs.standard), belarus: parseAmount(priceInputs.belarus) };
+  const down = parseAmount(fields.down.value);
+  const exchange = parseAmount(fields.exchange.value);
+  const budget = parseAmount(fields.budget.value, 0);
+  const validBudget = budget >= 0 && budget <= 1000000;
+  if (validBudget) monthlyBudget = budget;
+  fields.budget.setAttribute('aria-invalid', String(!validBudget));
+  budgetError.hidden = validBudget;
+  const valid = {
+    price: validPrice(prices[priceGroup(bankId)]), down: down >= 0 && down <= 10000000,
+    exchange: exchange >= 0.0001 && exchange <= 20
+  };
+  const reasons = {
+    price: 'Введите цену квартиры от $1 до $10 000 000.',
+    down: 'Введите первоначальный взнос от $0 до $10 000 000.',
+    exchange: 'Введите курс от 0,0001 до 20 BYN.'
+  };
+  for (const [id, isValid] of Object.entries(valid)) fields[id].setAttribute('aria-invalid', String(!isValid));
+  const messages = Object.keys(valid).filter(id => !valid[id]).map(id => reasons[id]);
+  errors.hidden = !messages.length;
+  errors.textContent = messages.join(' ');
+  return messages.length ? null : { prices, down, exchange, lump: prepayment.amount, month: prepayment.month, belarusMonth: prepayment.belarusMonth, budget: monthlyBudget };
+}
+
+function findAfterLump(result) {
+  const event = result.rows.find(row => row.lump);
+  return { event, next: event ? result.rows[event.month] : null };
+}
+
+function paymentParts(row) {
+  const interest = Math.round(row.interest / 100);
+  return { interest: whole.format(interest), principal: whole.format(Math.round(row.total / 100) - interest) };
+}
+
+function answer(title, row, after = false) {
+  const parts = row ? paymentParts(row) : null;
+  const amount = row ? rounded(row.total) : '0';
+  return `<div class="answer${after ? ' after' : ''}">
+    <div class="answer-title">${title}</div><strong class="amount">${amount} <small>BYN</small></strong>
+    ${parts ? `<p class="amount-parts"><span>Проценты <b>${parts.interest} BYN</b></span><span>Погашение долга <b>${parts.principal} BYN</b></span></p>` : '<p class="muted">Кредит закрыт</p>'}
+    ${row && after ? `<p class="payment-month">${row.month}-й месяц кредита</p>` : ''}
+    ${row?.extra ? `<p class="payment-month">Платёж по графику ${rounded(row.minimum)} BYN</p>` : ''}
+  </div>`;
+}
+
+function renderWarning(result, settings, event) {
+  const notes = [];
+  if (settings.lump && !event) notes.push('К выбранному месяцу кредит уже будет выплачен. Досрочный платёж не учтён.');
+  const peak = Math.max(...result.rows.map(row => row.shortfall));
+  if (peak > 0) {
+    const first = result.rows.find(row => row.shortfall);
+    notes.push(`В ${first.month}-м месяце платёж по графику выше вашего бюджета на ${rounded(first.shortfall)} BYN.`);
+  }
+  return notes.map(note => `<p class="notice">${note}</p>`).join('');
+}
+
+function renderPhases(result, next) {
+  const { plan, rows } = result;
+  const milestones = new Map();
+  if (plan.grace) milestones.set(plan.grace + 1, 'Начинаются платежи по основному долгу');
+  if (plan.switchMonth) milestones.set(plan.switchMonth, 'Меняется ставка');
+  if (next) milestones.delete(next.month);
+  return [...milestones].map(([month, label]) => {
+    const row = rows[month - 1];
+    if (!row) return '';
+    const parts = paymentParts({ ...row, total: row.total - row.lump });
+    return `<div class="change"><span>${month}-й месяц. ${label}</span><strong>${rounded(row.total - row.lump)} BYN</strong><span class="muted">Проценты ${parts.interest} BYN · погашение долга ${parts.principal} BYN</span></div>`;
+  }).join('');
+}
+
+function renderLoanTotal(result) {
+  loanTotal.innerHTML = `<span class="muted">Сумма кредита</span><strong>${rounded(result.opening)} BYN</strong>
+    <span class="muted">Цена квартиры ${rounded(result.price)} BYN</span><span class="muted">Первоначальный взнос ${rounded(result.down)} BYN</span>`;
+}
+
+function renderBank(result, settings) {
+  const { plan, rows } = result;
+  const conditions = `<div class="bank-info"><p class="muted">${duration(plan.years * 12)} · ${plan.summary.split('.')[0]}</p><a href="${plan.url}">Условия банка</a></div>`;
+  if (result.issue || !rows.length) {
+    bank.innerHTML = result.issue ? `${conditions}<p class="notice">${result.issue}</p>` : '<p>Первоначальный взнос покрывает стоимость квартиры. Кредит не нужен.</p>';
+    return;
+  }
+  const agroControls = plan.id === 'agro' ? `<div class="agro-options" role="group" aria-label="Вид платежа">
+    <button type="button" data-style="differential" aria-pressed="${agroType === 'differential'}">Платёж снижается</button>
+    <button type="button" data-style="annuity" aria-pressed="${agroType === 'annuity'}">Равный платёж</button>
+  </div>` : '';
+  const { event, next } = findAfterLump(result);
+  const after = event ? answer('Платёж после досрочного погашения', next, true) : '';
+  const changes = renderPhases(result, next);
+  const first = { ...rows[0], total: rows[0].total - rows[0].lump };
+  bank.innerHTML = `${conditions}${agroControls}<div class="answers">${answer('Первый платёж', first)}${after}</div>
+    ${event ? `<p class="debt">Остаток долга после досрочного погашения <strong>${rounded(event.balance)} BYN</strong></p>` : ''}
+    ${renderWarning(result, settings, event)}${changes ? `<div class="phases">${changes}</div>` : ''}`;
+}
+
+function scheduleRow(label, row, isEarlyPayment = false) {
+  return `<tr${isEarlyPayment ? ' class="lump"' : ''}>
+    <th scope="row">${label}</th><td>${rub(row.total)}</td><td>${rub(row.interest)}</td><td>${rub(row.principal)}</td><td>${rub(row.balance)}</td></tr>`;
+}
+
+function renderFullSchedule(result) {
+  const scrollTop = months.scrollTop;
+  const scheduleRows = result.rows.map(row => {
+    if (!row.lump) return scheduleRow(row.month, row);
+    if (!result.plan.lock) return scheduleRow(`${row.month} · досрочно`, row, true);
+    const regular = { ...row, total: row.total - row.lump, principal: row.principal - row.lump, balance: row.balance + row.lump };
+    const early = { total: row.lump, interest: 0, principal: row.lump, balance: row.balance };
+    return scheduleRow(row.month, regular) + scheduleRow(`${row.month + 1} · досрочно`, early, true);
+  }).join('');
+  scheduleSummary.textContent = `Срок погашения ${duration(result.rows.length)}. Всего процентов ${rounded(result.totalInterest)} BYN.`;
+  months.innerHTML = `<table aria-label="Полный график, BYN"><thead><tr><th scope="col">Месяц</th><th scope="col">Всего к оплате</th><th scope="col">Проценты</th><th scope="col">Погашение долга</th><th scope="col">Остаток долга</th></tr></thead><tbody>${scheduleRows}</tbody></table>`;
+  months.scrollTop = scrollTop;
+}
+
+function paymentInThirdYear(result) {
+  const month = result.rows[24];
+  return month ? month.total - month.lump : 0;
+}
+
+function renderComparison(results) {
+  const eligible = results.filter(result => !result.issue);
+  const affordable = eligible.filter(result => result.rows.every(row => !row.shortfall));
+  const candidates = affordable.length ? affordable : eligible;
+  const lowest = (metric) => candidates.reduce((best, result) => !best || metric(result) < metric(best) ? result : best, null);
+  const byCost = lowest(result => result.totalCost);
+  const byPayment = lowest(paymentInThirdYear);
+  const rows = results.map(result => {
+    const bankName = `<th scope="row">${result.plan.name}</th>`;
+    if (result.issue) return `<tr>${bankName}<td colspan="3">${result.issue}</td></tr>`;
+    if (!result.rows.length) return `<tr>${bankName}<td colspan="2">Кредит не нужен</td><td>${rounded(result.totalCost)}</td></tr>`;
+    const firstMonth = result.rows[0];
+    return `<tr>${bankName}<td>${rounded(firstMonth.total - firstMonth.lump)}</td><td>${rounded(paymentInThirdYear(result))}</td><td>${rounded(result.totalCost)}</td></tr>`;
+  }).join('');
+  const notes = eligible.length && monthlyBudget && affordable.length !== eligible.length
+    ? `<p class="muted">${affordable.length ? 'Выделены варианты, у которых платежи по графику укладываются в ваш бюджет.' : 'Во всех вариантах бывают месяцы, когда платёж по графику выше вашего бюджета.'}</p>` : '';
+  compareResult.innerHTML = `${notes}${byCost ? `<div class="compare-picks">
+    <button type="button" data-pick="${byCost.plan.id}">Меньше всего за квартиру и проценты<strong>${byCost.plan.name} · ${rounded(byCost.totalCost)} BYN</strong></button>
+    <button type="button" data-pick="${byPayment.plan.id}">Самый низкий платёж в 25-й месяц<strong>${byPayment.plan.name} · ${rounded(paymentInThirdYear(byPayment))} BYN</strong></button>
+  </div>` : ''}<div class="table-wrap" tabindex="0" role="region" aria-label="Платежи четырёх банков в BYN">
+    <table aria-label="Сравнение банков, BYN"><thead><tr><th scope="col">Банк</th><th scope="col">Первый месяц</th><th scope="col">25-й месяц</th><th scope="col">Цена квартиры + проценты</th></tr></thead><tbody>${rows}</tbody></table>
+  </div><p class="muted field-note">Платежи за первый и 25-й месяцы показаны без разового досрочного платежа.</p>`;
+}
+
+function currentBank() {
+  return currentResults.find(result => result.plan.id === bankId);
+}
+
+function estimate(base, settings) {
+  const price = settings.prices[priceGroup(base.id)];
+  const plan = { ...getPlan(base, agroType), price, years: terms[base.id] };
+  if (!validPrice(price)) return { plan, issue: 'Сначала введите цену квартиры.' };
+  const prepaymentAfter = plan.lock ? settings.belarusMonth - 1 : settings.month;
+  const result = simulate(plan, { ...settings, prepaymentAfter });
+  const minimum = Math.ceil(toCents(price) * (plan.minDown ?? 0) / 100) / 100;
+  if (settings.down < minimum) {
+    result.issue = `Минимальный первоначальный взнос ${usd(minimum)} (${plan.minDown}%). Не хватает ${usd(minimum - settings.down)}.`;
+  } else if (plan.maxCredit && result.opening > toCents(plan.maxCredit)) {
+    result.issue = `Банк выдаёт до ${whole.format(plan.maxCredit)} BYN. Увеличьте первоначальный взнос.`;
+  }
+  return result;
+}
+
+function updateSelectedFields() {
+  fields.price.value = priceInputs[priceGroup(bankId)];
+  priceHelp.textContent = bankId === 'belarus' ? 'Цена по программе Беларусбанка 1%' : '';
+  priceHelp.hidden = bankId !== 'belarus';
+  const { years: maximum } = plans.find(plan => plan.id === bankId);
+  termField.innerHTML = [5, 7, 10, 15, 20, 25, 30].filter(years => years <= maximum)
+    .map(years => `<option value="${years}">${duration(years * 12)}</option>`).join('');
+  termField.value = String(terms[bankId]);
+  updatePrepaymentMonth();
+}
+
+function updatePrepaymentMonth() {
+  const { lock } = plans.find(plan => plan.id === bankId);
+  monthField.min = String(lock + 1);
+  monthField.value = String(lock ? prepayment.belarusMonth : prepayment.month);
+  monthLabel.textContent = lock ? 'Месяц досрочного погашения' : 'После какого месяца';
+  monthExample.hidden = Boolean(lock);
+  prepaymentRestriction.hidden = !lock;
+  if (lock) prepaymentFirstMonth.textContent = `Досрочное погашение — с ${lock + 1}-го месяца, после пяти лет.`;
+  monthField.removeAttribute('aria-invalid');
+  prepaymentError.hidden = true;
+}
+
+function setEditing(editing) {
+  prepaymentForm.hidden = !editing;
+  prepaymentOpen.setAttribute('aria-expanded', String(editing));
+  prepaymentError.hidden = true;
+  lumpField.removeAttribute('aria-invalid');
+  monthField.removeAttribute('aria-invalid');
+  if (editing) {
+    lumpField.value = prepayment.amount ? usdFormat.format(prepayment.amount) : '';
+    updatePrepaymentMonth();
+    lumpField.focus();
+  } else {
+    prepaymentOpen.focus();
+  }
+}
+
+function renderPrepayment(result) {
+  const { event } = findAfterLump(result);
+  const active = Boolean(prepayment.amount);
+  prepaymentOpen.textContent = active ? 'Изменить досрочный платёж' : 'Добавить досрочный платёж';
+  prepaymentRemove.hidden = !active;
+  prepaymentApplied.hidden = !active;
+  if (event) {
+    const date = result.plan.lock ? `в начале ${event.month + 1}-го месяца` : `после ${event.month}-го месяца`;
+    prepaymentApplied.textContent = `Досрочный платёж ${rub(event.lump)} BYN ${date}.`;
+  } else if (active) {
+    const date = result.plan.lock ? `в ${prepayment.belarusMonth}-м месяце` : `после ${prepayment.month}-го месяца`;
+    prepaymentApplied.textContent = `Запланировано ${usd(prepayment.amount)} ${date}.`;
+  }
+}
+
+function render() {
+  const settings = getSettings();
+  bank.hidden = !settings;
+  loanTotal.hidden = !settings;
+  comparison.hidden = !settings;
+  if (!settings) {
+    fullSchedule.hidden = true;
+    prepaymentPanel.hidden = true;
+    return;
+  }
+  currentResults = plans.map(plan => estimate(plan, settings));
+  const selected = currentBank();
+  renderLoanTotal(selected);
+  renderBank(selected, settings);
+  const usable = !selected.issue && selected.rows.length > 0;
+  fullSchedule.hidden = !usable;
+  prepaymentPanel.hidden = !usable;
+  if (usable) renderPrepayment(selected);
+  if (usable && fullSchedule.open) renderFullSchedule(selected);
+  if (comparison.open) renderComparison(currentResults);
+}
+
+for (const field of Object.values(fields)) field.addEventListener('input', event => {
+  if (event.target === fields.price) priceInputs[priceGroup(bankId)] = fields.price.value;
+  render();
+});
+termField.addEventListener('change', () => { terms[bankId] = Number(termField.value); render(); });
+function selectBank(id) {
+  bankId = id;
+  for (const button of picker.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.bank === id));
+  updateSelectedFields();
+  render();
+}
+picker.addEventListener('click', event => {
+  const choice = event.target.closest('button[data-bank]');
+  if (choice) selectBank(choice.dataset.bank);
+});
+compareResult.addEventListener('click', event => {
+  const choice = event.target.closest('button[data-pick]');
+  if (!choice) return;
+  const id = choice.dataset.pick;
+  selectBank(id);
+  picker.querySelector(`[data-bank="${id}"]`).focus();
+});
+bank.addEventListener('click', event => {
+  const choice = event.target.closest('button[data-style]');
+  if (!choice) return;
+  agroType = choice.dataset.style;
+  render();
+  bank.querySelector(`[data-style="${agroType}"]`).focus();
+});
+prepaymentOpen.addEventListener('click', () => setEditing(prepaymentForm.hidden));
+document.querySelector('#prepayment-cancel').addEventListener('click', () => setEditing(false));
+prepaymentRemove.addEventListener('click', () => { prepayment = { ...defaultPrepayment }; setEditing(false); render(); });
+prepaymentForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const amount = parseAmount(lumpField.value);
+  const month = monthField.valueAsNumber;
+  const earliestMonth = Number(monthField.min);
+  const validAmount = amount >= 0.01 && amount <= 1000000;
+  const validMonth = Number.isInteger(month) && month >= earliestMonth && month <= 360;
+  lumpField.setAttribute('aria-invalid', String(!validAmount));
+  monthField.setAttribute('aria-invalid', String(!validMonth));
+  if (!validAmount || !validMonth) {
+    prepaymentError.textContent = !validAmount ? 'Введите сумму от $0,01 до $1 000 000.' : `Введите номер месяца от ${earliestMonth} до 360.`;
+    prepaymentError.hidden = false;
+    return;
+  }
+  prepayment = bankId === 'belarus' ? { ...prepayment, amount, belarusMonth: month } : { ...prepayment, amount, month };
+  setEditing(false);
+  render();
+});
+fullSchedule.addEventListener('toggle', () => {
+  if (fullSchedule.open && !fullSchedule.hidden) renderFullSchedule(currentBank());
+});
+comparison.addEventListener('toggle', () => {
+  if (comparison.open && !comparison.hidden) renderComparison(currentResults);
+});
+updateSelectedFields();
+render();
+</script>
+</body>
+</html>
