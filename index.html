@@ -33,7 +33,8 @@ button { cursor: pointer; }
 .bank-picker button { display: flex; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; min-height: 49px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 10px; background: #fff; text-align: left; font-size: .9rem; font-weight: 700; overflow-wrap: break-word; }
 .bank-picker button[aria-pressed="true"] { border-color: #2861b7; color: #103e83; background: var(--wash); }
 .bank-icon { flex: 0 0 29px; width: 29px; height: 29px; object-fit: contain; border-radius: 5px; }
-.bank-picker.standard { grid-template-columns: repeat(3,minmax(0,1fr)); margin-bottom: 12px; }
+.bank-picker.standard { margin-bottom: 12px; }
+.asb-icon { display: grid; place-items: center; background: #12613f; color: white; font-size: .64rem; font-weight: 750; }
 .partner-heading { font-size: .95rem; margin: 0 0 7px; }
 .partner-heading a { font-weight: 650; }
 .tab-label span, .tab-label small { display: block; }
@@ -105,6 +106,9 @@ thead th { background: #eff4fa; color: #344862; }
 tr.lump { background: var(--green); }
 .model-notes { margin-top: 12px; }
 .model-notes p { margin-top: 6px; }
+.lease-details { margin-top: 8px; }
+.lease-details ul { padding-inline-start: 18px; margin: 6px 0; }
+.lease-details li + li { margin-top: 5px; }
 @media (max-width: 900px) { main { padding: 24px 17px 30px; } .card { padding: 14px; } }
 @media (max-width: 680px) { .workspace { grid-template-columns: 1fr; gap: 9px; } .purchase .fields { grid-template-columns: 1fr 1fr; } .bank-picker { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 550px) { .bank-picker.standard { grid-template-columns: repeat(2,minmax(0,1fr)); } }
@@ -115,10 +119,11 @@ tr.lump { background: var(--green); }
 <main>
   <h1>Кредит на квартиру</h1>
   <nav class="bank-navigation" aria-label="Выберите программу">
-    <div class="bank-picker standard" aria-label="Банки">
+    <div class="bank-picker standard" aria-label="Банки и лизинг">
     <button type="button" data-bank="tech" aria-pressed="true"><img class="bank-icon" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAEpklEQVR42u2b34tbRRTHP2fuJDf7o921WmmroihFpIKiFRR88akgFkTUx5a+tFawf4JQ/wKFonYRK6IIFtQX8c2+qEit+CIqgm0paitd67ab3Wxy752vDzfZbZut1k1yt2bvQAjkZjJzPnPOmZM5ZwxkYAJg38zziP1I2zGNM0xNVse5b5DeYGryaOdDAxm7T8fEk4fx8S4EhCZIQyU/ZhDF5PK1jrBp4gUOkjgwUVk3xejkLpJGIG2EoRMe8gXtyDcysYffp98Ek7H3z+fwox+SLqQQohzVMDcJXEZU9YTm0w7sAJJQcMMvfNsWFBzmRNABj7SdrGnYWhB+kYHlMruHPWa13DOsqWYoAFrvWNPNbI0DgDUPwPccW6yy68zUW8zme3AjKIW0ucoONLZcChUIwAyUiLs2Rex5LCYEQdGaIIic8c7XTU6ezbCKrUgTVgTAGWQJbL3V8fJTtVVVgK9OpZw8k+GquTkUagJJCmnIbbATRgWBgq4dVEo4Z12PJdqadO1+ZoZzS9+39hx60b6enaB3VwIA/sUz/sOz/9CvM2av8avvlyoG5abx+U8px35IqFaNoG7TSVrimUeqPHhHtPjcGXz/W8bR4y18Zfl+rZZ4/F7Pjm0V+uly+g7grS+afPDZAowbhGWijrq47Wa3CMDai/vdmYxX3p+HsWv32/lEzI5tldzZWX8g+D455EXtPXcx4CcMN2KEqwSJHGQGcaV76nEF/DojGjWyq/o5B8HDuVnloF3/zmt8P1a+s/qNFpy5EEgBl9GlygKysPzkpbZDDXQDEASMXy8EZubFZAdSH+LYnn7CWf7yLn+/2Aj8MSuIrK//LyUggvP1wHRdOINKtDT+6miAwVwLTk0HkgyqHk6cTqk3hLn+HikKMAdpC778JaXqPc0UqhHMNVX8NpiFPAQ9firl/oOXUFuVkkzgBnO6IOWz3ffeHNXICO2NsZkI4m6/UYgPCIL5hfYKtD3zoEPiJIUkuWxMt8pO0KIrdVUFnG5fLnSvpub7oprF/gfqK+XyRKgEUAIoAZQASgAlgBJACaAEUAIoAZQASgAlgBJACaAEQFkiQ/9r0trlNC4/318uo9vJNHfSXlIxxXu+qOJUpXmGl7rys/yrWiuFtK6llFNEIVUnhQCoeNi8wXH3RsfWWyIevccvytlpD90ZsW/nCD9PZ5w8Hzh7MdDKitDOvRc0qPN7ZTAxZnz60jgP3B4xHl/fks41xY9nA08emuX8jHC+O9H6/9AA5fm7bZsdY7GRpHnq3y1T2aF2ltmA0apx3xZHrWIDTzz4IjxgrWJY2xSut41UbAh2gXbNwKFjTdbX8gSm2XVU87u8X31hcMnWgfuAK3JZCyscomYD3wkKMYFobGVSrDTlfcNtg0UIUobCJYASwIoBzBVf6n0DNHMg5hzSt/hYSGHNCC8FolhYOOEw9xrCMBcYyiujy5Wdu4BkoFcdUzd9RNp4l9FJjxhuTZACQoxOetLGEaY2fuJBRo29zM8IP7IbA7JWXrM6bDbvY4cCzP/1Nls27F+6Pb54ff7SsxBeRNoOYXx4rtJK4GYxdxzsdQ6v/7hzff5v2wzuhQVkZMIAAAAASUVORK5CYII=">Технобанк</button>
     <button type="button" data-bank="agro" aria-pressed="false"><img class="bank-icon" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB4ElEQVR42p2SO2iTYRiFn7+gRAhkKwgtHXIZosShk4MXBEVEQalDwaIONSWiEQehxiVLmoJZ8qMNShEHGws6BBFUXIR6QTCW1CS1jZAsHVIopTq0JibHISbhJxWDZ/o4533Pe/tgG8yPoYqJtBAX/4PvczG9HkLPT/JPA6P5eHkaDQxAXx/Y7WAE2lrXWH9xQ29H0JthtB5F9blgdyMsXUc/biMlkIopAbw/j1LHuxyhNBPU0lOTWg3cbnA6wTg2i+Ea7m4MLT5oVVq4jF6dQWuRRkd/zclPC8ComKhahZUV6O8H28EIxuAt49kJ5HDAocftZepjSJvvJiiVwOWCSgWMtUgj8IuCfEuZ+Hzg8XReQQmUy0E+D95z43h/TlIuA9kr1lbTZlC5q1ZOCTQ/hrIPwx1cz479Yep1qH59IoDBoGnU9oXY2ID6VMOoXIZdR2LsvRg2AKqZe6rVwH401nDLBDoX9tn/56wJ9OGCVVMCfRptcD0AOw9EKRYbQjNo99l4K8HpT1qSCwVwnJqynmX2MMoEUO0uUn5aKiRbHQAoO6Vfd1D6Ekqb7R9q2XR+JqrCo5u43dDbCzYbSLC1BaursLwMe/xxPEPXjG0NmsjcH9dictLCeUdC+EYnOuJ/A6MQ9OBCJmCwAAAAAElFTkSuQmCC">Белагропромбанк</button>
     <button type="button" data-bank="neo" aria-pressed="false"><img class="bank-icon" alt="" src="data:image/png;base64,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">Нео Банк</button>
+      <button type="button" data-bank="asb" aria-pressed="false"><span class="bank-icon asb-icon" aria-hidden="true">АСБ</span><span class="tab-label"><span>АСБ Лизинг</span><small>Лизинг квартиры</small></span></button>
     </div>
     <h2 class="partner-heading" id="partner-heading">Партнёрские программы <a href="https://www.b-u.by/legenda/">ЖК «Легенда»</a></h2>
     <div class="bank-picker" id="partner-picker" role="group" aria-labelledby="partner-heading"></div>
@@ -140,7 +145,8 @@ tr.lump { background: var(--green); }
       <details class="details-tools">
         <summary>Изменить срок или курс</summary>
         <div class="fields">
-          <div><label for="years" id="years-label">Срок кредита</label><select id="years"></select></div>
+          <div id="years-control"><label for="years" id="years-label">Срок кредита</label><select id="years"></select></div>
+          <div id="lease-term-control" hidden><label for="lease-term">Срок лизинга, месяцев</label><input id="lease-term" type="number" min="12" max="240" step="1" value="240" inputmode="numeric" aria-describedby="lease-term-help"><p id="lease-term-help" class="muted field-note">От 12 до 240 месяцев</p></div>
           <div><label for="exchange">Курс БелВЭБ, BYN за $1</label><input id="exchange" type="text" inputmode="decimal" value="3,015"></div>
         </div>
         <p class="muted field-note">Исходный курс от <a href="https://www.belveb.by/rates/">25.11.2026</a>.</p>
@@ -158,6 +164,7 @@ tr.lump { background: var(--green); }
           <button type="button" id="prepayment-remove" class="button plain" hidden>Убрать досрочный платёж</button>
         </div>
         <form id="prepayment-form" class="prepayment-form" novalidate hidden>
+          <p class="muted field-note" id="lease-prepayment-help" hidden>Расчёт учитывает доплату в стоимость квартиры после заявления на пересчёт. Платёж за полный выкуп показан отдельно.</p>
           <div class="fields pair">
             <div><label for="lump">Сумма, $</label><input id="lump" type="text" inputmode="decimal" placeholder="Например, 25 000"></div>
             <div><label for="month" id="month-label">После какого месяца</label><input id="month" type="number" min="1" max="360" step="1" inputmode="numeric" value="3" aria-describedby="month-example prepayment-restriction prepayment-error"><p id="month-example" class="muted field-note">3 — после третьего платежа.</p></div>
@@ -193,13 +200,30 @@ tr.lump { background: var(--green); }
     <p class="muted">Калькулятор направляет доплату сразу на погашение долга и пересчитывает платежи на оставшийся срок. Месячные доплаты начинаются со следующего месяца после разового платежа, а без него — с первого месяца. У Беларусбанка 1% в расчёте действует пятилетнее ограничение.</p>
     <p class="muted">Общие ставки взяты на 25.11.2026, партнёрские — из таблицы застройщика и открытых условий банков. У программ ЖК «Легенда» цену можно менять отдельно. Страховка, оформление и налоговый вычет в расчёт не входят.</p>
   </details>
+  <template id="asb-conditions">
+    <details class="lease-details">
+      <summary>Условия АСБ Лизинга</summary>
+      <ul class="muted">
+        <li>Готовые квартиры от застройщика и вторичное жильё. Для <a href="https://www.b-u.by/legenda/">ЖК «Легенда»</a> условия с АСБ Лизингом публично не подтверждены. «Бетонный улей» должен согласовать продажу квартиры лизинговой компании и назвать цену сделки.</li>
+        <li>Договор в BYN на 12–240 месяцев. Аванс от 10%. В официальном калькуляторе аванс до 40%. Обеспечение — задаток и/или хотя бы один платёжеспособный поручитель.</li>
+        <li>Ставка в первые 36 месяцев равна ставке рефинансирования НБРБ. С 37-го месяца к ней добавляют минимум 4,5 процентного пункта. Обе ставки могут меняться.</li>
+        <li>Постоянное проживание в Беларуси, возраст 18–75 лет и постоянный доход. Учитывают подтверждённые доходы за 3 месяца, в том числе доход супруга. Перечень документов для НПД и одобрение уточняются по заявке.</li>
+        <li>Можно внести больше с первого платежа. Чтобы уменьшить остаток стоимости и пересчитать вознаграждение, подайте заявление. Полностью выкупить квартиру можно после года с момента передачи.</li>
+        <li>Квартира принадлежит лизинговой компании до выкупа. Она оформляет страховку. Клиент возмещает её стоимость и оплачивает коммунальные услуги и содержание квартиры. Прописка семьи возможна. Для перепланировки нужно письменное согласие компании.</li>
+        <li>Имущественный вычет при выкупном лизинге зависит от права семьи на вычет и подтверждённой оплаты стоимости квартиры. <a href="https://nalog.gov.by/individuals/list_of_documents_for_deduction_for_construction.php">Документы для вычета</a></li>
+      </ul>
+      <p class="muted"><a href="https://asbleasing.by/dokumenty-dlya-chastnyh-lic/">Документы для заявки</a> · <a href="https://asbleasing.by/kontakty/">Контакты в Бресте</a></p>
+    </details>
+  </template>
 </main>
 <script>
 'use strict';
 
 const STANDARD_PRICE_USD = 113267;
+const LEGENDA_PARTNER_PRICE_USD = 123449.96;
 const REFINANCE_RATE = 9.25;
 const BELARUSBANK_PARTNER = 'https://belarusbank.by/fizicheskim_licam/kredit/financing/kredit-ipoteka-s-nami-v-ramkakh-partnerskikh-programm/';
+const ASB_LEASE = 'https://asbleasing.by/leasing-dlya-fizicheskih-lic/kvartiry-zhilaya-nedvizhimost/';
 const plans = [
   {
     id: 'tech', name: 'Технобанк', program: '«Милый дом»',
@@ -221,49 +245,57 @@ const plans = [
     url: 'https://neobank.by/credits/nedvizhimost-ot-zastrojshika/'
   },
   {
+    id: 'asb', name: 'АСБ Лизинг', lease: true, buyoutPercent: 1, minBuyoutMonth: 12,
+    price: STANDARD_PRICE_USD, years: 20, grace: 0, rate: REFINANCE_RATE, nextRate: REFINANCE_RATE + 4.5, switchMonth: 37,
+    type: 'differential', lock: 0, minDown: 10, maxDown: 40, maxPrice: 1000000,
+    summary: '9,25% годовых в 1–36-й месяцы, от 13,75% с 37-го месяца',
+    note: 'Расчёт по минимальной ставке, без страховых и других расходов по договору.',
+    url: ASB_LEASE
+  },
+  {
     id: 'belarus', name: 'Беларусбанк · 1% на 2 года', bankName: 'Беларусбанк', offer: '1% на 2 года', icon: 'belarus',
-    price: 123449.96, years: 20, grace: 12, rate: 1, nextRate: 15.4, switchMonth: 25,
+    price: LEGENDA_PARTNER_PRICE_USD, years: 20, grace: 12, rate: 1, nextRate: 15.4, switchMonth: 25,
     type: 'annuity', lock: 60,
     summary: '1% годовых первые 2 года, затем 15,4%. Первый год по графику платятся только проценты.',
     url: BELARUSBANK_PARTNER
   },
   {
     id: 'belarus-one-year', name: 'Беларусбанк · 1% на год', bankName: 'Беларусбанк', offer: '1% на год', icon: 'belarus',
-    price: STANDARD_PRICE_USD, years: 20, grace: 12, rate: 1, nextRate: 14.4, switchMonth: 13,
+    price: LEGENDA_PARTNER_PRICE_USD, years: 20, grace: 12, rate: 1, nextRate: 14.4, switchMonth: 13,
     type: 'annuity', lock: 0, summary: '1% годовых в 1–12-й месяцы, затем 14,4% с 13-го месяца',
     url: BELARUSBANK_PARTNER
   },
   {
     id: 'belarus-575', name: 'Беларусбанк · 5,75% на год', bankName: 'Беларусбанк', offer: '5,75% на год', icon: 'belarus',
-    price: STANDARD_PRICE_USD, years: 20, grace: 12, rate: 5.75, nextRate: 14.4, switchMonth: 13,
+    price: LEGENDA_PARTNER_PRICE_USD, years: 20, grace: 12, rate: 5.75, nextRate: 14.4, switchMonth: 13,
     type: 'annuity', lock: 0, summary: '5,75% годовых в 1–12-й месяцы, затем 14,4% с 13-го месяца',
     note: 'В расчёте принят график «Ипотеки с нами». Вид платежей и отсрочку уточните в договоре.',
     url: BELARUSBANK_PARTNER
   },
   {
     id: 'belarus-needs', name: 'Беларусбанк · для нуждающихся', bankName: 'Беларусбанк', offer: 'Для нуждающихся · 13,25%', icon: 'belarus', requiresRegistry: true,
-    price: STANDARD_PRICE_USD, years: 20, grace: 12, rate: REFINANCE_RATE + 4,
+    price: LEGENDA_PARTNER_PRICE_USD, years: 20, grace: 12, rate: REFINANCE_RATE + 4,
     type: 'differential', lock: 0, summary: '13,25% годовых при текущей ставке НБРБ (9,25% + 4 п.п.)',
     note: 'Для покупателей жилья у застройщика, которые стоят на учёте нуждающихся в улучшении жилищных условий.',
     url: 'https://belarusbank.by/fizicheskim_licam/kredit/financing/kredit-ipoteka-ekspress-na-priobretenie-zhilogo-pomeshcheniya/'
   },
   {
     id: 'belveb', name: 'БелВЭБ', bankName: 'БелВЭБ', offer: '6,99% на год', icon: 'belveb',
-    price: STANDARD_PRICE_USD, years: 20, grace: 0, rate: 6.99, nextRate: 14.9, switchMonth: 13,
+    price: LEGENDA_PARTNER_PRICE_USD, years: 20, grace: 0, rate: 6.99, nextRate: 14.9, switchMonth: 13,
     type: 'differential', lock: 0, minDown: 10, summary: '6,99% годовых в 1–12-й месяцы, затем 14,9% с 13-го месяца',
     note: 'Ставка с 13-го месяца по условиям банка равна ставке рефинансирования НБРБ + 5,65 п.п.',
     url: 'https://www.belveb.by/credits/property-building/'
   },
   {
     id: 'mtbank', name: 'МТБанк', bankName: 'МТБанк', offer: '4,99% на 11 месяцев', icon: 'mtbank',
-    price: STANDARD_PRICE_USD, years: 20, grace: 0, rate: 4.99, nextRate: 15.996, switchMonth: 12,
+    price: LEGENDA_PARTNER_PRICE_USD, years: 20, grace: 0, rate: 4.99, nextRate: 15.996, switchMonth: 12,
     type: 'annuity', lock: 0, minDown: 10, summary: '4,99% годовых в 1–11-й месяцы, затем 15,996% с 12-го месяца',
     note: 'График повторяет таблицу ЖК: новая ставка с 12-го месяца. Калькулятор на сайте МТБанка показывает льготу на 6 месяцев. Уточните срок в договоре. Новая ставка зависит от ставки овернайт НБРБ.',
     url: 'https://www.mtbank.by/credits/zhk-legenda-i-zhk-river-park/'
   },
   {
     id: 'pal', name: 'Промагролизинг', bankName: 'Промагролизинг', offer: 'Лизинг · 11,75% на 2 года', icon: 'pal', lease: true,
-    price: STANDARD_PRICE_USD, years: 20, grace: 0, rate: REFINANCE_RATE + 2.5, nextRate: 14, switchMonth: 25,
+    price: LEGENDA_PARTNER_PRICE_USD, years: 20, grace: 0, rate: REFINANCE_RATE + 2.5, nextRate: 14, switchMonth: 25,
     type: 'annuity', lock: 0, summary: '11,75% годовых в 1–24-й месяцы (9,25% + 2,5 п.п.), затем 14% с 25-го месяца',
     note: 'Ориентир по ставкам из таблицы ЖК, рассчитанный для равных платежей. График, выкупную стоимость, возможные комиссии и досрочный выкуп определяет договор лизинга.',
     url: 'https://pal.by/predmety-lizinga/lizing-nedvizimosti'
@@ -293,7 +325,8 @@ function simulate(plan, settings) {
   const price = toCents(plan.price * settings.exchange);
   const down = toCents(Math.min(settings.down, plan.price) * settings.exchange);
   const opening = price - down;
-  const term = plan.years * 12;
+  const term = plan.months ?? plan.years * 12;
+  const buyout = Math.min(opening, Math.round(price * (plan.buyoutPercent ?? 0) / 100));
   const requestedLump = toCents(settings.lump * settings.exchange);
   const lumpMonth = requestedLump ? Math.max(settings.prepaymentAfter ?? settings.month, plan.lock) : null;
   const budget = toCents(settings.budget);
@@ -309,6 +342,7 @@ function simulate(plan, settings) {
     const annualRate = plan.switchMonth && month >= plan.switchMonth ? plan.nextRate : plan.rate;
     const monthlyRate = annualRate / 1200;
     const interest = Math.round(balance * monthlyRate);
+    const remainingValue = balance - buyout;
     const payingPrincipal = month > plan.grace;
     const monthsRemaining = term - month + 1;
     const rateChangesAnnuity = month === plan.switchMonth && plan.type === 'annuity';
@@ -316,30 +350,32 @@ function simulate(plan, settings) {
     if (payingPrincipal && (recalculate || rateChangesAnnuity)) {
       scheduled = plan.type === 'annuity'
         ? annuity(balance, monthlyRate, monthsRemaining)
-        : Math.round(balance / monthsRemaining);
+        : Math.round(remainingValue / monthsRemaining);
       recalculate = false;
     }
 
     let scheduledPrincipal = 0;
     if (payingPrincipal) {
       scheduledPrincipal = plan.type === 'annuity' ? Math.max(0, scheduled - interest) : scheduled;
-      scheduledPrincipal = month === term ? balance : Math.min(balance, scheduledPrincipal);
+      scheduledPrincipal = month === term ? remainingValue : Math.min(remainingValue, scheduledPrincipal);
     }
     const minimum = interest + scheduledPrincipal;
     const extra = budget && month >= extraStarts
-      ? Math.min(balance - scheduledPrincipal, Math.max(0, budget - minimum))
+      ? Math.min(remainingValue - scheduledPrincipal, Math.max(0, budget - minimum))
       : 0;
-    const lump = month === lumpMonth ? Math.min(balance - scheduledPrincipal - extra, requestedLump) : 0;
+    const lump = month === lumpMonth ? Math.min(remainingValue - scheduledPrincipal - extra, requestedLump) : 0;
     const principal = scheduledPrincipal + extra + lump;
     const total = interest + principal;
     balance -= principal;
+    const finalBuyout = buyout && balance === buyout && month >= plan.minBuyoutMonth ? buyout : 0;
+    balance -= finalBuyout;
     totalInterest += interest;
     if (extra || lump) recalculate = true;
     const shortfall = budget && month >= budgetStarts ? Math.max(0, minimum - budget) : 0;
-    rows.push({ month, annualRate, total, interest, principal, minimum, extra, lump, balance, shortfall });
+    rows.push({ month, annualRate, total, interest, principal, minimum, extra, lump, balance, shortfall, buyout: finalBuyout });
   }
 
-  return { plan, price, down, opening, rows, totalInterest, totalCost: price + totalInterest, lumpMonth, requestedLump };
+  return { plan, price, down, opening, term, buyout, rows, totalInterest, totalCost: price + totalInterest, lumpMonth, requestedLump };
 }
 
 function duration(months) {
@@ -355,6 +391,8 @@ const partnerPicker = document.querySelector('#partner-picker');
 const bank = document.querySelector('#bank');
 const fields = Object.fromEntries(['price', 'down', 'exchange', 'budget'].map(id => [id, document.getElementById(id)]));
 const termField = document.querySelector('#years');
+const leaseTermField = document.querySelector('#lease-term');
+const asbConditions = document.querySelector('#asb-conditions');
 const priceHelp = document.querySelector('#price-help');
 const errors = document.querySelector('#input-error');
 const budgetError = document.querySelector('#budget-error');
@@ -389,7 +427,7 @@ const priceInputs = Object.fromEntries(plans.map(plan => [priceGroup(plan), usdF
 const terms = Object.fromEntries(plans.map(plan => [plan.id, plan.years]));
 
 function priceGroup(plan) {
-  return plan.offer ? plan.id : 'standard';
+  return plan.offer || plan.buyoutPercent ? plan.id : 'standard';
 }
 
 function selectedPlan() {
@@ -413,10 +451,15 @@ function validPrice(price) {
   return price >= 1 && price <= 10000000;
 }
 
+function validLeaseTerm(months) {
+  return Number.isInteger(months) && months >= 12 && months <= 240;
+}
+
 function getSettings() {
   const prices = Object.fromEntries(Object.entries(priceInputs).map(([key, value]) => [key, parseAmount(value)]));
   const down = parseAmount(fields.down.value);
   const exchange = parseAmount(fields.exchange.value);
+  const leaseMonths = leaseTermField.valueAsNumber;
   const budget = parseAmount(fields.budget.value, 0);
   const validBudget = budget >= 0 && budget <= 1000000;
   if (validBudget) monthlyBudget = budget;
@@ -433,9 +476,12 @@ function getSettings() {
   };
   for (const [id, isValid] of Object.entries(valid)) fields[id].setAttribute('aria-invalid', String(!isValid));
   const messages = Object.keys(valid).filter(id => !valid[id]).map(id => reasons[id]);
+  const invalidTerm = Boolean(selectedPlan().buyoutPercent) && !validLeaseTerm(leaseMonths);
+  leaseTermField.setAttribute('aria-invalid', String(invalidTerm));
+  if (invalidTerm) messages.push('Введите срок лизинга от 12 до 240 месяцев.');
   errors.hidden = !messages.length;
   errors.textContent = messages.join(' ');
-  return messages.length ? null : { prices, down, exchange, lump: prepayment.amount, month: prepayment.month, belarusMonth: prepayment.belarusMonth, budget: monthlyBudget };
+  return messages.length ? null : { prices, down, exchange, leaseMonths, lump: prepayment.amount, month: prepayment.month, belarusMonth: prepayment.belarusMonth, budget: monthlyBudget };
 }
 
 function findAfterLump(result) {
@@ -448,20 +494,22 @@ function paymentParts(row) {
   return { interest: whole.format(interest), principal: whole.format(Math.round(row.total / 100) - interest) };
 }
 
-function answer(title, row, after = false) {
+function answer(title, row, after = false, lease = false) {
   const parts = row ? paymentParts(row) : null;
   const amount = row ? rounded(row.total) : '0';
   return `<div class="answer${after ? ' after' : ''}">
     <div class="answer-title">${title}</div><strong class="amount">${amount} <small>BYN</small></strong>
-    ${parts ? `<p class="amount-parts"><span>Проценты <b>${parts.interest} BYN</b></span><span>Погашение долга <b>${parts.principal} BYN</b></span></p>` : '<p class="muted">Кредит закрыт</p>'}
-    ${row && after ? `<p class="payment-month">${row.month}-й месяц кредита</p>` : ''}
+    ${parts ? `<p class="amount-parts"><span>${lease ? 'Доход компании' : 'Проценты'} <b>${parts.interest} BYN</b></span><span>${lease ? 'В стоимость квартиры' : 'Погашение долга'} <b>${parts.principal} BYN</b></span></p>` : `<p class="muted">${lease ? 'Лизинг закрыт' : 'Кредит закрыт'}</p>`}
+    ${row && after ? `<p class="payment-month">${row.month}-й месяц ${lease ? 'лизинга' : 'кредита'}</p>` : ''}
     ${row?.extra ? `<p class="payment-month">Платёж по графику ${rounded(row.minimum)} BYN</p>` : ''}
   </div>`;
 }
 
 function renderWarning(result, event) {
   const notes = [];
-  if (result.requestedLump && !event) notes.push('К выбранному месяцу кредит уже будет выплачен. Досрочный платёж не учтён.');
+  if (result.requestedLump && !event) notes.push(result.plan.lease
+    ? 'В выбранном месяце досрочную доплату к стоимости квартиры уже нельзя учесть.'
+    : 'К выбранному месяцу кредит уже будет выплачен. Досрочный платёж не учтён.');
   const peak = Math.max(...result.rows.map(row => row.shortfall));
   if (peak > 0) {
     const first = result.rows.find(row => row.shortfall);
@@ -481,7 +529,7 @@ function renderPhases(result, next) {
     const row = rows[month - 1];
     if (!row) return '';
     const parts = paymentParts({ ...row, total: row.total - row.lump });
-    return `<div class="change"><span>${month}-й месяц. ${label}</span><strong>${rounded(row.total - row.lump)} BYN</strong><span class="muted">Проценты ${parts.interest} BYN · погашение долга ${parts.principal} BYN</span></div>`;
+    return `<div class="change"><span>${month}-й месяц. ${label}</span><strong>${rounded(row.total - row.lump)} BYN</strong><span class="muted">${plan.lease ? 'Доход компании' : 'Проценты'} ${parts.interest} BYN · ${plan.lease ? 'в стоимость квартиры' : 'погашение долга'} ${parts.principal} BYN</span></div>`;
   }).join('');
 }
 
@@ -492,11 +540,15 @@ function renderLoanTotal(result) {
 
 function renderBank(result) {
   const { plan, rows } = result;
-  const summary = plan.offer ? plan.summary : plan.summary.split('.')[0];
-  const conditions = `<div class="bank-info"><p class="muted">${duration(plan.years * 12)} · ${summary}</p><a href="${plan.url}">${plan.lease ? 'Условия лизинга' : 'Условия банка'}</a></div>`;
+  const summary = plan.offer || plan.lease ? plan.summary : plan.summary.split('.')[0];
+  const term = result.term ?? plan.months ?? plan.years * 12;
+  const conditions = `<div class="bank-info"><p class="muted">${duration(term)} · ${summary}</p><a href="${plan.url}">${plan.lease ? 'Условия лизинга' : 'Условия банка'}</a></div>`;
+  const details = plan.buyoutPercent ? asbConditions.innerHTML : '';
+  const keepDetailsOpen = bank.querySelector('.lease-details')?.open;
   const note = plan.note ? `<p class="notice">${plan.note}</p>` : '';
   if (result.issue || !rows.length) {
-    bank.innerHTML = result.issue ? `${conditions}<p class="notice">${result.issue}</p>${note}` : '<p>Первоначальный взнос покрывает стоимость квартиры.</p>';
+    bank.innerHTML = result.issue ? `${conditions}<p class="notice">${result.issue}</p>${note}${details}` : '<p>Первоначальный взнос покрывает стоимость квартиры.</p>';
+    if (details && keepDetailsOpen) bank.querySelector('.lease-details').open = true;
     return;
   }
   const agroControls = plan.id === 'agro' ? `<div class="agro-options" role="group" aria-label="Вид платежа">
@@ -504,12 +556,14 @@ function renderBank(result) {
     <button type="button" data-style="annuity" aria-pressed="${agroType === 'annuity'}">Равный платёж</button>
   </div>` : '';
   const { event, next } = findAfterLump(result);
-  const after = event ? answer('Платёж после досрочного погашения', next, true) : '';
+  const after = event ? answer('Платёж после досрочного погашения', next, true, plan.lease) : '';
   const changes = renderPhases(result, next);
   const first = { ...rows[0], total: rows[0].total - rows[0].lump };
-  bank.innerHTML = `${conditions}${agroControls}<div class="answers">${answer(plan.lease ? 'Первый платёж · ориентир' : 'Первый платёж', first)}${after}</div>
-    ${event ? `<p class="debt">Остаток долга после досрочного погашения <strong>${rounded(event.balance)} BYN</strong></p>` : ''}
-    ${note}${renderWarning(result, event)}${changes ? `<div class="phases">${changes}</div>` : ''}`;
+  bank.innerHTML = `${conditions}${agroControls}<div class="answers">${answer(plan.lease ? 'Первый платёж · ориентир' : 'Первый платёж', first, false, plan.lease)}${after}</div>
+    ${event ? `<p class="debt">${plan.lease ? 'Остаток стоимости с выкупом' : 'Остаток долга после досрочного погашения'} <strong>${rounded(event.balance)} BYN</strong></p>` : ''}
+    ${result.buyout ? `<p class="debt">Отдельный платёж за выкуп в ${rows.at(-1).month}-м месяце <strong>${rub(result.buyout)} BYN</strong></p>` : ''}
+    ${note}${renderWarning(result, event)}${changes ? `<div class="phases">${changes}</div>` : ''}${details}`;
+  if (details && keepDetailsOpen) bank.querySelector('.lease-details').open = true;
 }
 
 function scheduleRow(label, row, isEarlyPayment = false) {
@@ -520,6 +574,12 @@ function scheduleRow(label, row, isEarlyPayment = false) {
 function renderFullSchedule(result) {
   const scrollTop = months.scrollTop;
   const scheduleRows = result.rows.map(row => {
+    if (row.buyout) {
+      const regular = { ...row, balance: row.balance + row.buyout };
+      const buyout = { total: row.buyout, interest: 0, principal: row.buyout, balance: row.balance };
+      return scheduleRow(row.lump ? `${row.month} · досрочно` : row.month, regular, Boolean(row.lump))
+        + scheduleRow(`${row.month} · выкуп`, buyout);
+    }
     if (!row.lump) return scheduleRow(row.month, row);
     if (!result.plan.lock) return scheduleRow(`${row.month} · досрочно`, row, true);
     const regular = { ...row, total: row.total - row.lump, principal: row.principal - row.lump, balance: row.balance + row.lump };
@@ -527,8 +587,10 @@ function renderFullSchedule(result) {
     return scheduleRow(row.month, regular) + scheduleRow(`${row.month + 1} · досрочно`, early, true);
   }).join('');
   const termLabel = result.plan.lease ? 'Расчётный срок лизинга' : 'Срок погашения';
-  scheduleSummary.textContent = `${termLabel} ${duration(result.rows.length)}. Всего процентов ${rounded(result.totalInterest)} BYN.`;
-  months.innerHTML = `<table aria-label="Полный график, BYN"><thead><tr><th scope="col">Месяц</th><th scope="col">Всего к оплате</th><th scope="col">Проценты</th><th scope="col">Погашение долга</th><th scope="col">Остаток долга</th></tr></thead><tbody>${scheduleRows}</tbody></table>`;
+  const { lease } = result.plan;
+  const costLabel = lease ? 'Доход лизинговой компании' : 'Всего процентов';
+  scheduleSummary.textContent = `${termLabel} ${duration(result.rows.length)}. ${costLabel} ${rounded(result.totalInterest)} BYN.`;
+  months.innerHTML = `<table aria-label="Полный график, BYN"><thead><tr><th scope="col">Месяц</th><th scope="col">Всего к оплате</th><th scope="col">${lease ? 'Доход компании' : 'Проценты'}</th><th scope="col">${lease ? 'В стоимость квартиры' : 'Погашение долга'}</th><th scope="col">${lease ? 'Остаток стоимости' : 'Остаток долга'}</th></tr></thead><tbody>${scheduleRows}</tbody></table>`;
   months.scrollTop = scrollTop;
 }
 
@@ -557,8 +619,8 @@ function renderComparison(results) {
     <button type="button" data-pick="${byCost.plan.id}">Меньше всего за квартиру и проценты<strong>${byCost.plan.name} · ${rounded(byCost.totalCost)} BYN</strong></button>
     <button type="button" data-pick="${byPayment.plan.id}">Самый низкий платёж в 25-й месяц<strong>${byPayment.plan.name} · ${rounded(paymentInThirdYear(byPayment))} BYN</strong></button>
   </div>` : ''}<div class="table-wrap" tabindex="0" role="region" aria-label="Платежи по программам в BYN">
-    <table aria-label="Сравнение программ, BYN"><thead><tr><th scope="col">Программа</th><th scope="col">Первый месяц</th><th scope="col">25-й месяц</th><th scope="col">Цена квартиры + проценты</th></tr></thead><tbody>${rows}</tbody></table>
-  </div><p class="muted field-note">Платежи за первый и 25-й месяцы показаны без разового досрочного платежа. Для лизинга и программы для нуждающихся расчёт показан в таблице, автоматический выбор учитывает остальные кредиты.</p>`;
+    <table aria-label="Сравнение программ, BYN"><thead><tr><th scope="col">Программа</th><th scope="col">Первый месяц</th><th scope="col">25-й месяц</th><th scope="col">Всего за квартиру</th></tr></thead><tbody>${rows}</tbody></table>
+  </div><p class="muted field-note">Платежи за первый и 25-й месяцы показаны без разовой доплаты и отдельного выкупа. Итог по АСБ Лизингу включает выкуп. Автоматический выбор учитывает кредиты, доступные без справки об учёте нуждающихся.</p>`;
 }
 
 function currentBank() {
@@ -569,12 +631,20 @@ function estimate(base, settings) {
   const price = settings.prices[priceGroup(base)];
   const plan = { ...getPlan(base, agroType), price, years: terms[base.id] };
   if (!validPrice(price)) return { plan, issue: 'Сначала введите цену квартиры.' };
+  if (plan.buyoutPercent) {
+    if (!validLeaseTerm(settings.leaseMonths)) return { plan, issue: 'Введите срок лизинга от 12 до 240 месяцев.' };
+    plan.months = settings.leaseMonths;
+  }
   const prepaymentAfter = plan.lock ? settings.belarusMonth - 1 : settings.month;
-  const payments = plan.lease ? { ...settings, budget: 0, lump: 0 } : settings;
+  const payments = plan.lease && !plan.buyoutPercent ? { ...settings, budget: 0, lump: 0 } : settings;
   const result = simulate(plan, { ...payments, prepaymentAfter });
   const minimum = Math.ceil(toCents(price) * (plan.minDown ?? 0) / 100) / 100;
   if (settings.down < minimum) {
     result.issue = `Минимальный первоначальный взнос ${usd(minimum)} (${plan.minDown}%). Не хватает ${usd(minimum - settings.down)}.`;
+  } else if (plan.maxDown && settings.down > price * plan.maxDown / 100) {
+    result.issue = `Калькулятор АСБ Лизинга рассчитан на аванс до ${plan.maxDown}%. Для большего аванса запросите график у компании.`;
+  } else if (plan.maxPrice && result.price > toCents(plan.maxPrice)) {
+    result.issue = `Калькулятор АСБ Лизинга считает стоимость до ${whole.format(plan.maxPrice)} BYN. Для более дорогой квартиры запросите график у компании.`;
   } else if (plan.maxCredit && result.opening > toCents(plan.maxCredit)) {
     result.issue = `Банк выдаёт до ${whole.format(plan.maxCredit)} BYN. Увеличьте первоначальный взнос.`;
   }
@@ -585,9 +655,12 @@ function updateSelectedFields() {
   const plan = selectedPlan();
   document.querySelector('#payment-title').textContent = plan.lease ? 'Платежи по лизингу' : 'Платежи по кредиту';
   document.querySelector('#years-label').textContent = plan.lease ? 'Срок лизинга' : 'Срок кредита';
+  document.querySelector('#years-control').hidden = Boolean(plan.buyoutPercent);
+  document.querySelector('#lease-term-control').hidden = !plan.buyoutPercent;
+  document.querySelector('#lease-prepayment-help').hidden = !plan.buyoutPercent;
   fields.price.value = priceInputs[priceGroup(plan)];
-  priceHelp.textContent = plan.offer ? 'Отдельная цена для этой программы ЖК «Легенда»' : '';
-  priceHelp.hidden = !plan.offer;
+  priceHelp.textContent = plan.buyoutPercent ? 'Цена для примера. Уточните цену при продаже квартиры лизинговой компании.' : 'Отдельная цена для этой программы ЖК «Легенда»';
+  priceHelp.hidden = !plan.offer && !plan.buyoutPercent;
   const { years: maximum } = plan;
   termField.innerHTML = [5, 7, 10, 15, 20, 25, 30].filter(years => years <= maximum)
     .map(years => `<option value="${years}">${duration(years * 12)}</option>`).join('');
@@ -625,6 +698,7 @@ function setEditing(editing) {
 function renderPrepayment(result) {
   const { event } = findAfterLump(result);
   const active = Boolean(prepayment.amount);
+  monthField.max = String(result.plan.buyoutPercent ? result.term - 1 : 360);
   prepaymentOpen.textContent = active ? 'Изменить досрочный платёж' : 'Добавить досрочный платёж';
   prepaymentRemove.hidden = !active;
   prepaymentApplied.hidden = !active;
@@ -652,10 +726,11 @@ function render() {
   renderLoanTotal(selected);
   renderBank(selected);
   const usable = !selected.issue && selected.rows.length > 0;
+  const supportsExtra = !selected.plan.lease || Boolean(selected.plan.buyoutPercent);
   fullSchedule.hidden = !usable;
-  budgetControls.hidden = Boolean(selected.plan.lease);
-  fullSchedule.querySelector('summary').textContent = selected.plan.lease ? 'Примерный график лизинга' : 'График платежей и ежемесячная доплата';
-  prepaymentPanel.hidden = !usable || Boolean(selected.plan.lease);
+  budgetControls.hidden = !supportsExtra;
+  fullSchedule.querySelector('summary').textContent = supportsExtra ? 'График платежей и ежемесячная доплата' : 'Примерный график лизинга';
+  prepaymentPanel.hidden = !usable || !supportsExtra;
   if (!prepaymentPanel.hidden) renderPrepayment(selected);
   if (usable && fullSchedule.open) renderFullSchedule(selected);
   if (comparison.open) renderComparison(currentResults);
@@ -666,6 +741,7 @@ for (const field of Object.values(fields)) field.addEventListener('input', event
   render();
 });
 termField.addEventListener('change', () => { terms[bankId] = Number(termField.value); render(); });
+leaseTermField.addEventListener('input', render);
 function selectBank(id) {
   bankId = id;
   for (const button of picker.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.bank === id));
@@ -698,12 +774,13 @@ prepaymentForm.addEventListener('submit', event => {
   const amount = parseAmount(lumpField.value);
   const month = monthField.valueAsNumber;
   const earliestMonth = Number(monthField.min);
+  const latestMonth = Number(monthField.max);
   const validAmount = amount >= 0.01 && amount <= 1000000;
-  const validMonth = Number.isInteger(month) && month >= earliestMonth && month <= 360;
+  const validMonth = Number.isInteger(month) && month >= earliestMonth && month <= latestMonth;
   lumpField.setAttribute('aria-invalid', String(!validAmount));
   monthField.setAttribute('aria-invalid', String(!validMonth));
   if (!validAmount || !validMonth) {
-    prepaymentError.textContent = !validAmount ? 'Введите сумму от $0,01 до $1 000 000.' : `Введите номер месяца от ${earliestMonth} до 360.`;
+    prepaymentError.textContent = !validAmount ? 'Введите сумму от $0,01 до $1 000 000.' : `Введите номер месяца от ${earliestMonth} до ${latestMonth}.`;
     prepaymentError.hidden = false;
     return;
   }
